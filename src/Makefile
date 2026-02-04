@@ -1,11 +1,11 @@
-NAME	=	scop
+NAME		=	scop
+OBJDIR		=	obj/
+MAIN		=	main
+UTIL		=	object \
+				utils
 
-OBJDIR	=	obj/
-
-MAIN	=	main
-UTIL	=	object \
-			utils
-
+GLEW_PATH	=	includes/glew
+GLEW_LIB    = $(GLEW_PATH)/lib/libGLEW.a
 
 SOURCE	= $(MAIN) $(UTIL)
 
@@ -16,29 +16,42 @@ CC		= c++
 RMF		= rm -f
 RMRF	= rm -rf
 RMDIR	= rmdir
+MAKE	= make
 CFLAGS	= -Wall -Wextra -Werror -std=c++17
-LFLAGS	= -lglfw -lGL -lglew
+LFLAGS = \
+	-L$(GLEW_PATH)/lib \
+	-Wl,-rpath,$(abspath $(GLEW_PATH)/lib) \
+	-lglfw -lGL -lGLEW
 
-libs:
-	make PYTHON=python3 -C ./includes/glew/auto/
-	make -C ./includes/glew/
+all: $(NAME)
+
+$(GLEW_LIB):
+	$(MAKE) PYTHON=python3 -C $(GLEW_PATH)/auto
+	$(MAKE) -C $(GLEW_PATH)
 
 $(OBJDIR)%.o: %.cpp
 	mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) | $(GLEW_LIB)
 	$(CC) $(OBJ) $(CFLAGS) -o $(NAME) $(LFLAGS)
 
-clean:
+glewclean:
+	$(MAKE) clean -C $(GLEW_PATH)
+	$(MAKE) clean -C $(GLEW_PATH)/auto
+
+glewfclean: glewclean
+	$(MAKE) distclean -C $(GLEW_PATH)
+	$(MAKE) destroy -C $(GLEW_PATH)/auto
+
+clean: glewclean
 	$(RMRF) $(OBJ)
 	$(RMRF) $(OBJDIR)
 
-fclean: clean
+fclean: clean glewfclean
 	$(RMF) $(NAME)
 
 re: fclean all
 
-all: $(NAME)
 
-.PHONY: all clean fclean re libmake
+.PHONY: all clean fclean re

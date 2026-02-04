@@ -1,3 +1,5 @@
 [submodule "src/includes/glew"]
 	path = src/includes/glew
 	url = https://github.com/nigels-com/glew.git
+[submodule "actionbarsherlock"]
+	ignore = dirty
