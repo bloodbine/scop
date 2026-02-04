@@ -27,4 +27,7 @@ class Object {
         Object(const Object& obj);
         Object& operator=(const Object& obj);
         ~Object();
+
+        std::vector<Vertex> getVertexes(void);
+        std::vector<Face> getFaces(void);
 };

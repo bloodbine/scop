@@ -23,7 +23,7 @@ Object::Object(std::string filepath) {
                 face1.V3 = std::stoi(split_data[3]);
 
                 this->faces.push_back(face1);
-                if (split_data.size() == 5) {
+                if (split_data.size() == 5) { // Smoothly handle triangulation of quads, ngons are unhandled
                     Face face2;
 
                     face2.V1 = std::stoi(split_data[1]);
@@ -58,4 +58,12 @@ Object& Object::operator=(const Object& obj) {
 
 Object::~Object() {
     return;
+};
+
+std::vector<Vertex> Object::getVertexes(void) {
+    return (this->vertexes);
+};
+
+std::vector<Face> Object::getFaces(void) {
+    return (this->faces);
 };

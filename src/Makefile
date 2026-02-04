@@ -17,7 +17,11 @@ RMF		= rm -f
 RMRF	= rm -rf
 RMDIR	= rmdir
 CFLAGS	= -Wall -Wextra -Werror -std=c++17
-LFLAGS	= -lglfw -lGL
+LFLAGS	= -lglfw -lGL -lglew
+
+libs:
+	make PYTHON=python3 -C ./includes/glew/auto/
+	make -C ./includes/glew/
 
 $(OBJDIR)%.o: %.cpp
 	mkdir -p $(OBJDIR)

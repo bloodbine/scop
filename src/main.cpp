@@ -19,14 +19,17 @@ int main(int argc, char **argv) {
 
     Object obj(argv[1]);
 
-    while (!glfwWindowShouldClose(window))
-    {
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    glViewport(0, 0, width, height);
+
+    while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(window);
 
         glfwPollEvents();
-    }
+    };
 
     glfwTerminate();
     return (0);
