@@ -18,6 +18,7 @@ RMRF	= rm -rf
 RMDIR	= rmdir
 MAKE	= make
 CFLAGS	= -Wall -Wextra -Werror -std=c++17
+IFLAGS = -I$(GLEW_PATH)/include
 LFLAGS = \
 	-L$(GLEW_PATH)/lib \
 	-Wl,-rpath,$(abspath $(GLEW_PATH)/lib) \
@@ -31,9 +32,9 @@ $(GLEW_LIB):
 
 $(OBJDIR)%.o: %.cpp
 	mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
-$(NAME): $(OBJ) | $(GLEW_LIB)
+$(NAME): $(GLEW_LIB) | $(OBJ)
 	$(CC) $(OBJ) $(CFLAGS) -o $(NAME) $(LFLAGS)
 
 glewclean:
