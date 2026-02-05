@@ -2,6 +2,7 @@ NAME		=	scop
 OBJDIR		=	obj/
 MAIN		=	main
 UTIL		=	object \
+				shader \
 				utils
 
 GLEW_PATH	=	includes/glew

@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "includes/object.hpp"
+#include "includes/shader.hpp"
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -44,6 +45,9 @@ int main(int argc, char **argv) {
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+
+    Shader shader("shaders/shader.vert", "shaders/shader.frag");
+    shader.Use();
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
