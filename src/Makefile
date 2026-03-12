@@ -27,6 +27,8 @@ LFLAGS = \
 
 all: $(NAME)
 
+libs: $(GLEW_LIB)
+
 $(GLEW_LIB):
 	$(MAKE) PYTHON=python3 -C $(GLEW_PATH)/auto
 	$(MAKE) -C $(GLEW_PATH)
@@ -54,6 +56,5 @@ fclean: clean glewfclean
 	$(RMF) $(NAME)
 
 re: fclean all
-
 
 .PHONY: all clean fclean re

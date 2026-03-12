@@ -41,6 +41,10 @@ void Shader::Use() {
     glUseProgram(this->program);
 };
 
+unsigned int Shader::getShader() {
+    return (this->program);
+};
+
 Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
     this->program = glCreateProgram();
     this->vertexShader = this->CompileShader(GL_VERTEX_SHADER, this->ParseShader(vertexShaderPath));

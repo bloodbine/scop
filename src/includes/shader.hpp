@@ -21,4 +21,5 @@ class Shader {
         ~Shader();
 
         void Use();
+        unsigned int getShader();
 };
