@@ -2,6 +2,8 @@ NAME		=	scop
 OBJDIR		=	obj/
 MAIN		=	main
 UTIL		=	object \
+				VertexBuffer \
+				IndexBuffer \
 				shader \
 				utils
 

@@ -6,7 +6,6 @@
 
 class Shader {
     private:
-        // unsigned int shader;
         unsigned int program;
         unsigned int vertexShader;
         unsigned int fragmentShader;
