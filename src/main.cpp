@@ -1,5 +1,7 @@
 #include "includes/Renderer.hpp"
 #include "includes/VertexBuffer.hpp"
+#include "includes/VertexBufferLayout.hpp"
+#include "includes/VertexArray.hpp"
 #include "includes/IndexBuffer.hpp"
 
 int main(int argc, char **argv) {
@@ -48,20 +50,18 @@ int main(int argc, char **argv) {
         2, 3, 0
     };
 
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
+    VertexArray va;
     VertexBuffer vb(positions, 4 * 2 * sizeof(float));
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+    VertexBufferLayout layout;
+    layout.Push<float>(2);
+    va.AddBuffer(vb, layout);
 
     IndexBuffer ib(indices, 6);
 
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
     shader.Use();
 
+    va.Bind();
     ib.Bind();
 
     int location = glGetUniformLocation(shader.getShader(), "u_Colour");

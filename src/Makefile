@@ -3,6 +3,8 @@ OBJDIR		=	obj/
 MAIN		=	main
 UTIL		=	object \
 				VertexBuffer \
+				VertexBufferLayout \
+				VertexArray \
 				IndexBuffer \
 				shader \
 				utils
