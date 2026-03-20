@@ -3,4 +3,4 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "object.hpp"
-#include "shader.hpp"
+#include "Shader.hpp"

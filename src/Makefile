@@ -6,7 +6,7 @@ UTIL		=	object \
 				VertexBufferLayout \
 				VertexArray \
 				IndexBuffer \
-				shader \
+				Shader \
 				utils
 
 GLEW_PATH	=	includes/glew

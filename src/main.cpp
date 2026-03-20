@@ -52,20 +52,17 @@ int main(int argc, char **argv) {
 
     VertexArray va;
     VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+    vb.Bind();
     VertexBufferLayout layout;
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
+    va.Bind();
 
     IndexBuffer ib(indices, 6);
 
-    Shader shader("shaders/shader.vert", "shaders/shader.frag");
-    shader.Use();
-
-    va.Bind();
-    ib.Bind();
-
-    int location = glGetUniformLocation(shader.getShader(), "u_Colour");
-    glUniform4f(location, 1.0f, 1.0f, 1.0f, 1.0f);
+    Shader shader("shaders/shader");
+    shader.Bind();
+    shader.SetUnfiorm4f("u_Colour", 0.5f, 0.0f, 0.0f, 1.0f);
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
