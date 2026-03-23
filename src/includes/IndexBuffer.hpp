@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Renderer.hpp"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 class IndexBuffer {
     private:
@@ -14,5 +15,5 @@ class IndexBuffer {
         void Bind() const;
         void UnBind() const;
 
-        unsigned int Getcount() const;
+        unsigned int GetCount() const;
 };

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -23,6 +25,5 @@ class Shader {
         void UnBind() const;
 
         // Set Uniforms
-        void SetUnfiorm4f(const std::string& name, float v0, float v1, float f2, float f3);
+        void SetUniform4f(const std::string& name, float v0, float v1, float f2, float f3);
 };
-

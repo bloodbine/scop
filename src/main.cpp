@@ -3,6 +3,10 @@
 #include "includes/VertexBufferLayout.hpp"
 #include "includes/VertexArray.hpp"
 #include "includes/IndexBuffer.hpp"
+#include "includes/Shader.hpp"
+#include <iostream>
+#include <fstream>
+
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -23,7 +27,7 @@ int main(int argc, char **argv) {
 
     window = glfwCreateWindow(500, 500, "Scop", NULL, NULL);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(2);
 
     if (glewInit() != GLEW_OK) {
         std::cerr << "Failed to initialize GLEW" << std::endl;
@@ -32,7 +36,7 @@ int main(int argc, char **argv) {
 
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
-    Object obj(argv[1]);
+    // Object obj(argv[1]);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -62,10 +66,25 @@ int main(int argc, char **argv) {
 
     Shader shader("shaders/shader");
     shader.Bind();
-    shader.SetUnfiorm4f("u_Colour", 0.5f, 0.0f, 0.0f, 1.0f);
+    shader.SetUniform4f("u_Colour", random(), 0.0f, 0.0f, 1.0f);
 
+    va.UnBind();
+    vb.UnBind();
+    ib.UnBind();
+    shader.UnBind();
+
+    Renderer renderer;
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.Clear();
+
+        shader.Bind();
+        shader.SetUniform4f("u_Colour",
+            static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
+            static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
+            static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
+            1.0f);
+
+        renderer.Draw(va, ib, shader);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 

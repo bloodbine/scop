@@ -2,6 +2,7 @@ NAME		=	scop
 OBJDIR		=	obj/
 MAIN		=	main
 UTIL		=	object \
+				Renderer \
 				VertexBuffer \
 				VertexBufferLayout \
 				VertexArray \
