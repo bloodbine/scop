@@ -4,6 +4,8 @@
 #include "includes/VertexArray.hpp"
 #include "includes/IndexBuffer.hpp"
 #include "includes/Shader.hpp"
+#include "includes/Texture.hpp"
+#include "includes/stb_image.h"
 #include <iostream>
 #include <fstream>
 
@@ -27,7 +29,7 @@ int main(int argc, char **argv) {
 
     window = glfwCreateWindow(500, 500, "Scop", NULL, NULL);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(2);
+    glfwSwapInterval(10);
 
     if (glewInit() != GLEW_OK) {
         std::cerr << "Failed to initialize GLEW" << std::endl;
@@ -42,11 +44,11 @@ int main(int argc, char **argv) {
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
-    float positions[8] = {
-        -0.5f, -0.5f,
-        0.5f, -0.5f,
-        0.5f,  0.5f,
-        -0.5f, 0.5f
+    float positions[16] = {
+        -0.5f, -0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, 1.0f, 0.0f,
+        0.5f,  0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f, 0.0f, 1.0f
     };
 
     unsigned int indices[] = {
@@ -54,10 +56,14 @@ int main(int argc, char **argv) {
         2, 3, 0
     };
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
     VertexArray va;
-    VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+    VertexBuffer vb(positions, 4 * 4 * sizeof(float));
     vb.Bind();
     VertexBufferLayout layout;
+    layout.Push<float>(2);
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
     va.Bind();
@@ -67,6 +73,10 @@ int main(int argc, char **argv) {
     Shader shader("shaders/shader");
     shader.Bind();
     shader.SetUniform4f("u_Colour", random(), 0.0f, 0.0f, 1.0f);
+
+    Texture texture("42.png");
+    texture.Bind();
+    shader.SetUniform1i("u_Texture", 0);
 
     va.UnBind();
     vb.UnBind();

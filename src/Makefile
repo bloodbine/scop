@@ -8,10 +8,14 @@ UTIL		=	object \
 				VertexArray \
 				IndexBuffer \
 				Shader \
+				Texture \
+				stb_image \
 				utils
 
 GLEW_PATH	=	includes/glew
-GLEW_LIB    = $(GLEW_PATH)/lib/libGLEW.a
+GLEW_LIB	=	$(GLEW_PATH)/lib/libGLEW.a
+
+STB_IMAGE_PATH =includes/stb_image
 
 SOURCE	= $(MAIN) $(UTIL)
 
