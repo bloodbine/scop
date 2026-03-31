@@ -3,25 +3,17 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-
-struct Vertex {
-    float x;
-    float y;
-    float z;
-};
-
-struct Face {
-    int V1;
-    int V2;
-    int V3;
-};
+#include <array>
 
 class Object {
     private:
-        std::vector<Vertex> vertexes;
-        std::vector<Face> faces;
+        std::vector<float> vertexes;
+        std::vector<unsigned int> faces;
+        std::array<float, 3> Center;
         std::string material;
         std::string name;
+
+        void calculateCenter();
 
     public:
         Object(std::string filepath);
@@ -29,6 +21,7 @@ class Object {
         Object& operator=(const Object& obj);
         ~Object();
 
-        std::vector<Vertex> getVertexes(void);
-        std::vector<Face> getFaces(void);
+        std::vector<float> getVertexes(void);
+        std::vector<unsigned int> getFaces(void);
+        const std::array<float, 3> getCenter(void);
 };

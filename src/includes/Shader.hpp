@@ -28,4 +28,6 @@ class Shader {
         void SetUniform1i(const std::string& name, int value);
         void SetUniform1f(const std::string& name, float value);
         void SetUniform4f(const std::string& name, float v0, float v1, float f2, float f3);
+        void SetUnformMatrix4fv(const std::string& name, const float* matrix);
+        void SetUnformMatrix4dv(const std::string& name, const double* matrix);
 };

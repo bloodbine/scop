@@ -1,4 +1,5 @@
 #include "includes/Renderer.hpp"
+#include "includes/object.hpp"
 #include "includes/VertexBuffer.hpp"
 #include "includes/VertexBufferLayout.hpp"
 #include "includes/VertexArray.hpp"
@@ -6,8 +7,11 @@
 #include "includes/Shader.hpp"
 #include "includes/Texture.hpp"
 #include "includes/stb_image.h"
+#include "includes/Camera.hpp"
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
 
 
 int main(int argc, char **argv) {
@@ -27,9 +31,9 @@ int main(int argc, char **argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(500, 500, "Scop", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "Scop", NULL, NULL);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(10);
+    glfwSwapInterval(1);
 
     if (glewInit() != GLEW_OK) {
         std::cerr << "Failed to initialize GLEW" << std::endl;
@@ -38,65 +42,91 @@ int main(int argc, char **argv) {
 
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
-    // Object obj(argv[1]);
+    Object obj(argv[1]);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
-    float positions[16] = {
-        -0.5f, -0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f, 1.0f, 0.0f,
-        0.5f,  0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f, 0.0f, 1.0f
-    };
-
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
     VertexArray va;
-    VertexBuffer vb(positions, 4 * 4 * sizeof(float));
+    VertexBuffer vb(&obj.getVertexes()[0], obj.getVertexes().size() * sizeof(float));
     vb.Bind();
     VertexBufferLayout layout;
-    layout.Push<float>(2);
-    layout.Push<float>(2);
+    layout.Push<float>(3);
     va.AddBuffer(vb, layout);
     va.Bind();
 
-    IndexBuffer ib(indices, 6);
+    IndexBuffer ib(&obj.getFaces()[0], obj.getFaces().size());
 
     Shader shader("shaders/shader");
     shader.Bind();
-    shader.SetUniform4f("u_Colour", random(), 0.0f, 0.0f, 1.0f);
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    float colorTimer = 0.0f;
+    const float colorInterval = 0.5f; // seconds
+    float currentColor[4];
+    currentColor[0] = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+    currentColor[1] = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+    currentColor[2] = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+    currentColor[3] = 1.0f;
+    shader.SetUniform4f("u_Colour", currentColor[0], currentColor[1], currentColor[2], currentColor[3]);
 
-    Texture texture("42.png");
-    texture.Bind();
-    shader.SetUniform1i("u_Texture", 0);
+    // Texture texture("42.png");
+    // texture.Bind();
+    // shader.SetUniform1i("u_Texture", 0);
 
-    va.UnBind();
-    vb.UnBind();
-    ib.UnBind();
-    shader.UnBind();
+    // va.UnBind();
+    // vb.UnBind();
+    // ib.UnBind();
+    // shader.UnBind();
+
+    Camera camera;
+    const std::array<float, 3> cameraTarget = obj.getCenter();
+    std::cout << "Center of Gravity:" << cameraTarget[0] << " " << cameraTarget[1] << " " << cameraTarget[2] << std::endl;
+    camera.setTarget(cameraTarget[0], cameraTarget[1], cameraTarget[2]);
+    camera.setRadius(5.0);
+    camera.setAspect(800.0f / 600.0f);
+    camera.setFOV(45.0f);
+
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+
+    float modelMatrix[16] = {
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    };
+
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
     Renderer renderer;
     while (!glfwWindowShouldClose(window)) {
         renderer.Clear();
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
-        shader.Bind();
-        shader.SetUniform4f("u_Colour",
-            static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
-            static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
-            static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
-            1.0f);
+        camera.processKeyboard(window, deltaTime);
+
+        colorTimer += deltaTime;
+        if (colorTimer >= colorInterval) {
+            currentColor[0] = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+            currentColor[1] = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+            currentColor[2] = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+            shader.SetUniform4f("u_Colour", currentColor[0], currentColor[1], currentColor[2], currentColor[3]);
+            colorTimer = 0.0f;
+        }
+        const double* viewD = camera.getViewMatrix();
+        float viewF[16];
+        for (int i = 0; i < 16; ++i) viewF[i] = static_cast<float>(viewD[i]);
+        shader.SetUnformMatrix4fv("view", viewF);
+        shader.SetUnformMatrix4fv("projection", camera.getProjectionMatrix());
+        shader.SetUnformMatrix4fv("model", modelMatrix);
 
         renderer.Draw(va, ib, shader);
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         glfwSwapBuffers(window);
 

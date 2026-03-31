@@ -9,6 +9,7 @@ UTIL		=	object \
 				IndexBuffer \
 				Shader \
 				Texture \
+				Camera \
 				stb_image \
 				utils
 

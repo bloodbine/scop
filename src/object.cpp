@@ -1,5 +1,6 @@
 #include "includes/object.hpp"
 #include "includes/utils.hpp"
+#include <limits>
 
 Object::Object(std::string filepath) {
     std::ifstream ObjFile(filepath);
@@ -8,35 +9,25 @@ Object::Object(std::string filepath) {
         while (std::getline(ObjFile, line)) {
             std::vector<std::string> split_data = split_string(line, ' ');
             if (split_data[0] == "v") {
-                Vertex V;
-
-                V.x = std::stof(split_data[1]);
-                V.y = std::stof(split_data[2]);
-                V.z = std::stof(split_data[3]);
-
-                this->vertexes.push_back(V);
+                this->vertexes.push_back(std::stof(split_data[1]));
+                this->vertexes.push_back(std::stof(split_data[2]));
+                this->vertexes.push_back(std::stof(split_data[3]));
             } else if (split_data[0] == "f") {
-                Face face1;
-
-                face1.V1 = std::stoi(split_data[1]);
-                face1.V2 = std::stoi(split_data[2]);
-                face1.V3 = std::stoi(split_data[3]);
-
-                this->faces.push_back(face1);
+                this->faces.push_back(std::stoi(split_data[1]) - 1);
+                this->faces.push_back(std::stoi(split_data[2]) - 1);
+                this->faces.push_back(std::stoi(split_data[3]) - 1);
+                
                 if (split_data.size() == 5) { // Smoothly handle triangulation of quads, ngons are unhandled
-                    Face face2;
-
-                    face2.V1 = std::stoi(split_data[1]);
-                    face2.V2 = std::stoi(split_data[3]);
-                    face2.V3 = std::stoi(split_data[4]);
-
-                    this->faces.push_back(face2);
+                    this->faces.push_back(std::stoi(split_data[1]) - 1);
+                    this->faces.push_back(std::stoi(split_data[3]) - 1);
+                    this->faces.push_back(std::stoi(split_data[4]) - 1);
                 };
             } else if (split_data[0] == "o") {
                 this->name = split_data[1];
             };
         };
         ObjFile.close();
+        calculateCenter();
     } else {
         std::cerr << "Unable to open file: " << filepath << std::endl;
     };
@@ -60,10 +51,54 @@ Object::~Object() {
     return;
 };
 
-std::vector<Vertex> Object::getVertexes(void) {
+std::vector<float> Object::getVertexes(void) {
     return (this->vertexes);
 };
 
-std::vector<Face> Object::getFaces(void) {
+std::vector<unsigned int> Object::getFaces(void) {
     return (this->faces);
+}
+
+const std::array<float, 3> Object::getCenter(void)
+{
+    return (this->Center);
+};
+
+void Object::calculateCenter()
+{
+    float minX = std::numeric_limits<float>::max();
+    float minY = std::numeric_limits<float>::max();
+    float minZ = std::numeric_limits<float>::max();
+    float maxX = std::numeric_limits<float>::lowest();
+    float maxY = std::numeric_limits<float>::lowest();
+    float maxZ = std::numeric_limits<float>::lowest();
+
+    unsigned int i = 0;
+    for (const float& v : vertexes) {
+        int posType = i % 3;
+        switch (posType) {
+            case 0: // X Coordinate
+                if (v > maxX)
+                    maxX = v;
+                if (v < minX)
+                    minX = v;
+                break;
+            case 1: // Y Coordinate
+                if (v > maxY)
+                    maxY = v;
+                if (v < minY)
+                    minY = v;
+                break;
+            case 2: // Z Coordinate
+                if (v > maxZ)
+                    maxZ = v;
+                if (v < minZ)
+                    minZ = v;
+                break;
+            };
+        i += 1;
+    };
+    Center[0] = (minX + maxX) / 2;
+    Center[1] = (minY + maxY) / 2;
+    Center[2] = (minZ + maxZ) / 2;
 };
