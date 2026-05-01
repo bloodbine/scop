@@ -79,17 +79,27 @@ void Shader::SetUniform1i(const std::string& name, int value)
 void Shader::SetUniform1f(const std::string& name, float value)
 {
     glUniform1f(GetUniformLocation(name), value);
+}
+
+void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2)
+{
+    glUniform3f(GetUniformLocation(name), v0, v1, v2);
 };
 
 void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3) {
     glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
 };
 
-void Shader::SetUnformMatrix4fv(const std::string& name, const float* matrix) {
+void Shader::SetUniformMatrix4fv(const std::string& name, const float* matrix) {
     glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, matrix);
+}
+
+void Shader::SetUniformMatrix3fv(const std::string& name, const float* matrix)
+{
+    glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, matrix);
 };
 
-void Shader::SetUnformMatrix4dv(const std::string& name, const double* matrix) {
+void Shader::SetUniformMatrix4dv(const std::string& name, const double* matrix) {
     glUniformMatrix4dv(GetUniformLocation(name), 1, GL_FALSE, matrix);
 };
 

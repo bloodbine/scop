@@ -58,11 +58,11 @@ glewfclean: glewclean
 	$(MAKE) distclean -C $(GLEW_PATH)
 	$(MAKE) destroy -C $(GLEW_PATH)/auto
 
-clean: glewclean
+clean:
 	$(RMRF) $(OBJ)
 	$(RMRF) $(OBJDIR)
 
-fclean: clean glewfclean
+fclean: clean
 	$(RMF) $(NAME)
 
 re: fclean all

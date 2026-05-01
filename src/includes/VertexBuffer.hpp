@@ -5,9 +5,10 @@ class VertexBuffer {
         unsigned int m_RendererID;
 
     public:
-        VertexBuffer(const void* data, unsigned int size);
+        VertexBuffer(unsigned int size);
         ~VertexBuffer();
 
+        void AddSubData(const void* data, unsigned int size, unsigned int offset);
         void Bind() const;
         void UnBind() const;
 };

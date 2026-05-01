@@ -12,15 +12,41 @@ Object::Object(std::string filepath) {
                 this->vertexes.push_back(std::stof(split_data[1]));
                 this->vertexes.push_back(std::stof(split_data[2]));
                 this->vertexes.push_back(std::stof(split_data[3]));
+            } else if (split_data[0] == "vn") {
+                this->vertexNormals.push_back(std::stof(split_data[1]));
+                this->vertexNormals.push_back(std::stof(split_data[2]));
+                this->vertexNormals.push_back(std::stof(split_data[3]));
+            } else if (split_data[0] == "vt") {
+                this->vertexTexCoords.push_back(std::stof(split_data[1]));
+                this->vertexTexCoords.push_back(std::stof(split_data[2]));
+                this->vertexTexCoords.push_back(std::stof(split_data[3]));
             } else if (split_data[0] == "f") {
-                this->faces.push_back(std::stoi(split_data[1]) - 1);
-                this->faces.push_back(std::stoi(split_data[2]) - 1);
-                this->faces.push_back(std::stoi(split_data[3]) - 1);
-                
+                std::vector<std::string> split_index_1 = split_string(split_data[1], '/');
+                this->faces.push_back(std::stoi(split_index_1[0]) - 1);
+                this->faces.push_back(std::stoi(split_index_1[1]) - 1);
+                this->faces.push_back(std::stoi(split_index_1[2]) - 1);
+                std::vector<std::string> split_index_2 = split_string(split_data[2], '/');
+                this->faces.push_back(std::stoi(split_index_2[0]) - 1);
+                this->faces.push_back(std::stoi(split_index_2[1]) - 1);
+                this->faces.push_back(std::stoi(split_index_2[2]) - 1);
+                std::vector<std::string> split_index_3 = split_string(split_data[3], '/');
+                this->faces.push_back(std::stoi(split_index_3[0]) - 1);
+                this->faces.push_back(std::stoi(split_index_3[1]) - 1);
+                this->faces.push_back(std::stoi(split_index_3[2]) - 1);
+
                 if (split_data.size() == 5) { // Smoothly handle triangulation of quads, ngons are unhandled
+                    this->faces.push_back(std::stoi(split_index_1[0]) - 1);
+                    this->faces.push_back(std::stoi(split_index_1[1]) - 1);
+                    this->faces.push_back(std::stoi(split_index_1[2]) - 1);
+                    
+                    this->faces.push_back(std::stoi(split_data[0]) - 1);
                     this->faces.push_back(std::stoi(split_data[1]) - 1);
-                    this->faces.push_back(std::stoi(split_data[3]) - 1);
-                    this->faces.push_back(std::stoi(split_data[4]) - 1);
+                    this->faces.push_back(std::stoi(split_data[2]) - 1);
+
+                    std::vector<std::string> split_index_4 = split_string(split_data[3], '/');
+                    this->faces.push_back(std::stoi(split_data[0]) - 1);
+                    this->faces.push_back(std::stoi(split_data[1]) - 1);
+                    this->faces.push_back(std::stoi(split_data[2]) - 1);
                 };
             } else if (split_data[0] == "o") {
                 this->name = split_data[1];
@@ -53,6 +79,16 @@ Object::~Object() {
 
 std::vector<float> Object::getVertexes(void) {
     return (this->vertexes);
+}
+
+std::vector<float> Object::getVertexNormals(void)
+{
+    return (this->vertexNormals);
+}
+
+std::vector<float> Object::getVertexTexCoords(void)
+{
+    return (this->vertexTexCoords);
 };
 
 std::vector<unsigned int> Object::getFaces(void) {

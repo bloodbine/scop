@@ -13,7 +13,6 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
     Bind();
     vb.Bind();
     const std::vector<VertexBufferElement>& elements = layout.GetElements();
-    unsigned int offset = 0;
     for (unsigned int i = 0; i < elements.size(); i++) {
         const auto& element = elements[i];
         glEnableVertexAttribArray(i);
@@ -22,10 +21,9 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
             element.count,
             element.type,
             element.normalized,
-            layout.GetStride(),
-            reinterpret_cast<void *>(static_cast<uintptr_t>(offset))
+            0,
+            reinterpret_cast<void *>(static_cast<uintptr_t>(element.offset))
         );
-        offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
     }
 };
 
