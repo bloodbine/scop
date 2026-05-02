@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
     Object obj(argv[1]);
-
+    static_assert(sizeof(vec3) == 3 * sizeof(float));
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
@@ -52,24 +52,27 @@ int main(int argc, char **argv) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-    unsigned int vertexCount = obj.getVertexes().size();
-    unsigned int vertexNormalsCount = obj.getVertexNormals().size();
-    unsigned int vertexTexCoordsCount = obj.getVertexTexCoords().size();
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS); 
+
+    unsigned int positionsBytes = obj.getPositions().size() * (3 * sizeof(float));
+    unsigned int normalsBytes = obj.getNormals().size() * (3 * sizeof(float));
+    unsigned int UVsBytes = obj.getUVs().size() * (2 * sizeof(float));
     VertexArray va;
-    VertexBuffer vb((vertexCount + vertexNormalsCount + vertexTexCoordsCount) * sizeof(float));
-    vb.AddSubData(&obj.getVertexes()[0], vertexCount * sizeof(float), 0);
-    vb.AddSubData(&obj.getVertexNormals()[0], vertexNormalsCount * sizeof(float), vertexCount * sizeof(float));
-    vb.AddSubData(&obj.getVertexTexCoords()[0], vertexTexCoordsCount * sizeof(float), (vertexCount + vertexNormalsCount) * sizeof(float));
+    VertexBuffer vb((positionsBytes + normalsBytes + UVsBytes));
+    vb.AddSubData(&obj.getPositions()[0], positionsBytes, 0);
+    vb.AddSubData(&obj.getNormals()[0], normalsBytes, positionsBytes);
+    vb.AddSubData(&obj.getUVs()[0], UVsBytes, positionsBytes + normalsBytes);
     vb.Bind();
 
     VertexBufferLayout layout;
     layout.Push<float>(3, 0);
-    layout.Push<float>(3, vertexCount * sizeof(float));
-    layout.Push<float>(2, (vertexCount + vertexNormalsCount) * sizeof(float));
+    layout.Push<float>(3, positionsBytes);
+    layout.Push<float>(2, (positionsBytes + normalsBytes));
     va.AddBuffer(vb, layout);
     va.Bind();
 
-    IndexBuffer ib(&obj.getFaces()[0], obj.getFaces().size());
+    IndexBuffer ib(obj.getIndices().data(), obj.getIndices().size());
     Shader shader("shaders/shader");
     shader.Bind();
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -83,7 +86,7 @@ int main(int argc, char **argv) {
     std::cout << "Center of Gravity:" << cameraTarget[0] << " " << cameraTarget[1] << " " << cameraTarget[2] << std::endl;
     camera.setTarget(cameraTarget[0], cameraTarget[1], cameraTarget[2]);
     camera.setRadius(5.0);
-    camera.setAspect(800.0f / 600.0f);
+    camera.setAspect((float)width / (float)height);
     camera.setFOV(45.0f);
 
     float deltaTime = 0.0f;
@@ -97,6 +100,7 @@ int main(int argc, char **argv) {
     };
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDisable(GL_CULL_FACE); // Disable backface culling for debugging
 
     Renderer renderer;
     while (!glfwWindowShouldClose(window)) {
@@ -119,7 +123,9 @@ int main(int argc, char **argv) {
 
         float invMv3x3[9];
         if (!mat3Inverse(mv3x3, invMv3x3)) {
-            for (int i = 0; i < 0; ++i) invMv3x3[i] = (i % 4 == 0) ? 1.0f : 0.0f;
+            invMv3x3[0] = 1.0f; invMv3x3[1] = 0.0f; invMv3x3[2] = 0.0f;
+            invMv3x3[3] = 0.0f; invMv3x3[4] = 1.0f; invMv3x3[5] = 0.0f;
+            invMv3x3[6] = 0.0f; invMv3x3[7] = 0.0f; invMv3x3[8] = 1.0f;
         }
 
         float normalMatrix[9];
@@ -130,7 +136,7 @@ int main(int argc, char **argv) {
         shader.SetUniformMatrix4fv("view", viewF);
         shader.SetUniformMatrix4fv("projection", camera.getProjectionMatrix());
         shader.SetUniformMatrix4fv("model", modelMatrix);
-        shader.SetUniformMatrix4fv("normalMatrix", normalMatrix);
+        shader.SetUniformMatrix3fv("normalMatrix", normalMatrix);
 
         shader.SetUniform3f("u_LightDirection", 0.0f, -1.0f, 0.0f);
         shader.SetUniform3f("u_LightColour", 1.0f, 1.0f, 1.0f);

@@ -24,5 +24,8 @@ void main()
    vec4 texColour = texture(u_Texture, v_TexCoords);
 
    vec3 result = (ambient + diffuse) * texColour.rgb;
+
    colour = vec4(result, texColour.a);
 }
+
+   // colour = vec4(v_TexCoords, 0.0, 1.0);
