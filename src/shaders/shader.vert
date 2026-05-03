@@ -15,10 +15,10 @@ out vec3 v_FragPos;
 
 void main()
 {
-   vec4 viewPos = view * model * vec4(position, 1.0);
-   gl_Position = projection * viewPos;
+   vec4 worldPos = model * vec4(position, 1.0);
+   gl_Position = projection * view * worldPos;
 
    v_TexCoords = uv;
    v_Normal = normalMatrix * normal;
-   v_FragPos = viewPos.xyz;
+   v_FragPos = worldPos.xyz;
 }

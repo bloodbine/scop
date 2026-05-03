@@ -18,16 +18,15 @@ struct VertexTriple {
 
 struct vec3
 {
-    float x;
-    float y;
-    float z;
+    float v1;
+    float v2;
+    float v3;
 };
 
 struct vec2 {
-    float x;
-    float y;
+    float v1;
+    float v2;
 };
-
 
 class Object {
     private:

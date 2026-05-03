@@ -9,11 +9,11 @@
 #include "includes/stb_image.h"
 #include "includes/Camera.hpp"
 #include "includes/utils.hpp"
+#include "includes/GUI.hpp"
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
-
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     shader.Bind();
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    Texture texture("bl_tx225_co.png");
+    Texture texture("textures/bl_tx225_co.png"); // default texture
     texture.Bind();
     shader.SetUniform1i("u_Texture", 0);
 
@@ -100,7 +100,10 @@ int main(int argc, char **argv) {
     };
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDisable(GL_CULL_FACE); // Disable backface culling for debugging
+
+    GUI gui(window, texture);
+    float *lightRGB = gui.getLightRGB();
+    float *lightAmbientStrength = gui.getLightAmbientStrength();
 
     Renderer renderer;
     while (!glfwWindowShouldClose(window)) {
@@ -130,19 +133,21 @@ int main(int argc, char **argv) {
 
         float normalMatrix[9];
         mat3Transpose(invMv3x3, normalMatrix);
-
         shader.Bind();
-
+        texture.Bind(); 
+        
         shader.SetUniformMatrix4fv("view", viewF);
         shader.SetUniformMatrix4fv("projection", camera.getProjectionMatrix());
         shader.SetUniformMatrix4fv("model", modelMatrix);
         shader.SetUniformMatrix3fv("normalMatrix", normalMatrix);
 
+        shader.SetUniform1i("u_Texture", 0);
         shader.SetUniform3f("u_LightDirection", 0.0f, -1.0f, 0.0f);
-        shader.SetUniform3f("u_LightColour", 1.0f, 1.0f, 1.0f);
-        shader.SetUniform3f("u_AmbientStrength", 0.2f, 0.2f, 0.2f);
+        shader.SetUniform3f("u_LightColour", lightRGB[0], lightRGB[1], lightRGB[2]);
+        shader.SetUniform3f("u_AmbientStrength", lightAmbientStrength[0], lightAmbientStrength[1], lightAmbientStrength[2]);
 
         renderer.Draw(va, ib, shader);
+        gui.RenderWindow();
 
         glfwSwapBuffers(window);
 

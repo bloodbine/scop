@@ -56,11 +56,9 @@ void Camera::computeViewMatrix() {
 }
 
 void Camera::computeProjectionMatrix() {
-    // Reset projection matrix to identity
     for (int i = 0; i < 16; i++) projectionMatrix[i] = 0.0f;
     projectionMatrix[15] = 1.0f;
     
-    // Perspective projection
     float tanHalfFov = tan(fov * 3.14159f / 360.0f);
     projectionMatrix[0] = 1.0f / (aspect * tanHalfFov);
     projectionMatrix[5] = 1.0f / tanHalfFov;
@@ -90,18 +88,16 @@ void Camera::processKeyboard(GLFWwindow* window, float deltaTime) {
         zoomSpeed = 1.0f;
     }
 
-    // Q/E for zoom
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         radius -= zoomSpeed * deltaTime;
         if (radius < 1.0) radius = 1.0;
         needsUpdate = true;
     }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         radius += zoomSpeed * deltaTime;
         needsUpdate = true;
     }
 
-    // A/D for horizontal rotation
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         azimuth -= rotationSpeed * deltaTime;
         needsUpdate = true;
@@ -111,7 +107,6 @@ void Camera::processKeyboard(GLFWwindow* window, float deltaTime) {
         needsUpdate = true;
     }
     
-    // W/S for vertical rotation
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         elevation += rotationSpeed * deltaTime;
         if (elevation > 1.48) elevation = 1.48;
@@ -129,7 +124,6 @@ void Camera::processKeyboard(GLFWwindow* window, float deltaTime) {
     }
 }
 
-// Set target point (what the camera looks at)
 void Camera::setTarget(double x, double y, double z) {
     targetX = x;
     targetY = y;
@@ -138,38 +132,32 @@ void Camera::setTarget(double x, double y, double z) {
     computeViewMatrix();
 }
 
-// Set camera distance from target
 void Camera::setRadius(double r) {
     radius = r;
     updatePosition();
     computeViewMatrix();
 }
 
-// Set field of view (degrees)
 void Camera::setFOV(float f) {
     fov = f;
     projectionDirty = true;
 }
 
-// Set aspect ratio (width/height)
 void Camera::setAspect(float a) {
     aspect = a;
     projectionDirty = true;
 }
 
-// Set near and far clipping planes
 void Camera::setClipPlanes(float near, float far) {
     nearPlane = near;
     farPlane = far;
     projectionDirty = true;
 }
 
-// Get view matrix for OpenGL (returns pointer to 16 doubles)
 const double* Camera::getViewMatrix() {
     return viewMatrix;
 }
 
-// Get projection matrix for OpenGL (returns pointer to 16 floats)
 const float* Camera::getProjectionMatrix() {
     if (projectionDirty) {
         computeProjectionMatrix();
@@ -177,19 +165,15 @@ const float* Camera::getProjectionMatrix() {
     return projectionMatrix;
 }
 
-// Get camera position
 void Camera::getPosition(double& x, double& y, double& z) {
     x = posX; y = posY; z = posZ;
 }
 
-// Get target point
 void Camera::getTarget(double& x, double& y, double& z) {
     x = targetX; y = targetY; z = targetZ;
 }
 
-// Get current distance from target
 double Camera::getRadius() { return radius; }
 
-// Control speeds
 void Camera::setRotationSpeed(float speed) { rotationSpeed = speed; }
 void Camera::setZoomSpeed(float speed) { zoomSpeed = speed; }

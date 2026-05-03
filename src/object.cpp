@@ -150,20 +150,20 @@ void Object::calculateCenter()
     unsigned int i = 0;
     for (const vec3& v : positions) {
 
-        if (v.x > maxX)
-            maxX = v.x;
-        if (v.x < minX)
-            minX = v.x;
+        if (v.v1 > maxX)
+            maxX = v.v1;
+        if (v.v1 < minX)
+            minX = v.v1;
 
-        if (v.y > maxY)
-            maxY = v.y;
-        if (v.y < minY)
-            minY = v.y;
+        if (v.v2 > maxY)
+            maxY = v.v2;
+        if (v.v2 < minY)
+            minY = v.v2;
 
-        if (v.z > maxZ)
-            maxZ = v.z;
-        if (v.z < minZ)
-            minZ = v.z;
+        if (v.v3 > maxZ)
+            maxZ = v.v3;
+        if (v.v3 < minZ)
+            minZ = v.v3;
 
         i += 1;
     };

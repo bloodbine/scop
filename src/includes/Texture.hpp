@@ -13,7 +13,7 @@ class Texture {
         int m_Width;
         int m_Height;
         int m_BPP;
-    
+
     public:
         Texture(const std::string& path);
         ~Texture();
@@ -24,4 +24,7 @@ class Texture {
         int GetWidth() const;
         int GetHeight() const;
         int GetBytesPerPixel() const;
+        std::string GetTexturePath() const;
+
+        void SetTexture(std::string& path);
 };
