@@ -2,14 +2,31 @@
 
 #include "includes/stb_image.h"
 
+void Texture::SetWhiteTexture() {
+    uint8_t whitePixel[4] = {255, 255, 255, 255};
+    m_Width  = 1;
+    m_Height = 1;
+    m_BPP    = 4;
+
+    glBindTexture(GL_TEXTURE_2D, m_RendererID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, whitePixel);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void Texture::SetTexture(std::string& path) {
-    m_FilePath = path;
+    m_FilePath = "textures/" + path;
+
+    if (path == "None") {
+        SetWhiteTexture();
+        return ;
+    }
 
     stbi_set_flip_vertically_on_load(1);
-    m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4);
+    m_LocalBuffer = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_BPP, 4);
 
     if (!m_LocalBuffer) {
-        std::cerr << "Failed to load texture: " << path << std::endl;
+        std::cerr << "Failed to load texture: " << m_FilePath << std::endl;
+        SetWhiteTexture();
         return;
     }
 

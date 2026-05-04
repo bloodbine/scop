@@ -5,3 +5,4 @@
 [submodule "src/includes/imgui"]
 	path = src/includes/imgui
 	url = https://github.com/ocornut/imgui.git
+	ignore = dirty

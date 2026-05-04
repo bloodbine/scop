@@ -14,6 +14,8 @@ class Texture {
         int m_Height;
         int m_BPP;
 
+        void SetWhiteTexture();
+
     public:
         Texture(const std::string& path);
         ~Texture();

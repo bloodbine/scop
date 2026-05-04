@@ -4,6 +4,7 @@
 #include "Texture.hpp"
 #include <filesystem>
 #include <iostream>
+#include <map>
 #include <vector>
 
 #pragma once
@@ -15,8 +16,13 @@ class GUI {
         Texture &texture;
         std::vector<std::string> textureList;
         int textureIDx;
+        float (&modelMatrix)[16];
+        float scale[3];
+        std::map<std::string, GLenum> renderModeList;
+        std::string renderMode;
+
     public:
-        GUI(GLFWwindow *window, Texture &texture);
+        GUI(GLFWwindow *window, Texture &texture, float (&modelMatrix)[16]);
         ~GUI();
 
         void RenderWindow(void);

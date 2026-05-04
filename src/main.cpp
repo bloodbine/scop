@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     shader.Bind();
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    Texture texture("textures/bl_tx225_co.png"); // default texture
+    Texture texture("bl_tx225_co.png"); // default texture
     texture.Bind();
     shader.SetUniform1i("u_Texture", 0);
 
@@ -100,8 +100,10 @@ int main(int argc, char **argv) {
     };
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glLineWidth(2.0f);
+    glPointSize(2.5f);
 
-    GUI gui(window, texture);
+    GUI gui(window, texture, modelMatrix);
     float *lightRGB = gui.getLightRGB();
     float *lightAmbientStrength = gui.getLightAmbientStrength();
 
