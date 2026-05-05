@@ -27,5 +27,3 @@ void main()
 
    colour = vec4(result, texColour.a);
 }
-
-   // colour = vec4(v_TexCoords, 0.0, 1.0);

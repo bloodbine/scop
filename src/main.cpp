@@ -82,9 +82,9 @@ int main(int argc, char **argv) {
     shader.SetUniform1i("u_Texture", 0);
 
     Camera camera;
-    const std::array<float, 3> cameraTarget = obj.getCenter();
-    std::cout << "Center of Gravity:" << cameraTarget[0] << " " << cameraTarget[1] << " " << cameraTarget[2] << std::endl;
-    camera.setTarget(cameraTarget[0], cameraTarget[1], cameraTarget[2]);
+    const vec3 cameraTarget = obj.getCenter();
+    std::cout << "Center of Gravity:" << cameraTarget.v1 << " " << cameraTarget.v2 << " " << cameraTarget.v3 << std::endl;
+    camera.setTarget(cameraTarget.v1, cameraTarget.v2, cameraTarget.v3);
     camera.setRadius(5.0);
     camera.setAspect((float)width / (float)height);
     camera.setFOV(45.0f);
@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
     glLineWidth(2.0f);
     glPointSize(2.5f);
 
-    GUI gui(window, texture, modelMatrix);
+    GUI gui(window, texture, modelMatrix, vb, obj);
     float *lightRGB = gui.getLightRGB();
     float *lightAmbientStrength = gui.getLightAmbientStrength();
 
@@ -135,9 +135,11 @@ int main(int argc, char **argv) {
 
         float normalMatrix[9];
         mat3Transpose(invMv3x3, normalMatrix);
+        vb.Bind();
+        va.Bind();
         shader.Bind();
         texture.Bind(); 
-        
+
         shader.SetUniformMatrix4fv("view", viewF);
         shader.SetUniformMatrix4fv("projection", camera.getProjectionMatrix());
         shader.SetUniformMatrix4fv("model", modelMatrix);

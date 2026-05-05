@@ -1,6 +1,35 @@
 #include "includes/GUI.hpp"
 
-GUI::GUI(GLFWwindow *window, Texture &texture, float (&modelMatrix)[16]): texture(texture), modelMatrix(modelMatrix)
+void GUI::changeProjectionType() {
+    unsigned int positionsBytes = obj.getPositions().size() * (3 * sizeof(float));
+    unsigned int normalsBytes = obj.getNormals().size() * (3 * sizeof(float));
+    unsigned int UVsBytes = obj.getUVs().size() * (2 * sizeof(float));
+
+    switch (this->projectionModeIDx)
+    {
+    case 1:
+        this->vb.AddSubData(&this->obj.getPlanarUVsX()[0], UVsBytes, positionsBytes + normalsBytes);
+        break;
+    case 2:
+        this->vb.AddSubData(&this->obj.getPlanarUVsY()[0], UVsBytes, positionsBytes + normalsBytes);
+        break;
+    case 3:
+        this->vb.AddSubData(&this->obj.getPlanarUVsZ()[0], UVsBytes, positionsBytes + normalsBytes);
+        break;
+    case 4:
+        this->vb.AddSubData(&this->obj.getSphericalUVs()[0], UVsBytes, positionsBytes + normalsBytes);
+        break;
+    case 5:
+        this->vb.AddSubData(&this->obj.getCylindricalUVs()[0], UVsBytes, positionsBytes + normalsBytes);
+        break;
+    default:
+        this->vb.AddSubData(&this->obj.getUVs()[0], UVsBytes, positionsBytes + normalsBytes);
+        break;
+    }
+};
+
+GUI::GUI(GLFWwindow *window, Texture &texture, float (&modelMatrix)[16], VertexBuffer &vb, Object &obj):
+    texture(texture), modelMatrix(modelMatrix), vb(vb), obj(obj)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -23,6 +52,15 @@ GUI::GUI(GLFWwindow *window, Texture &texture, float (&modelMatrix)[16]): textur
     this->renderModeList["Line"] = GL_LINE;
     this->renderModeList["Point"] = GL_POINT;
     this->renderMode = "Fill";
+
+    this->projectionModeList.push_back("Default");
+    this->projectionModeList.push_back("Planar (X)");
+    this->projectionModeList.push_back("Planar (Y)");
+    this->projectionModeList.push_back("Planar (Z)");
+    this->projectionModeList.push_back("Spherical");
+    this->projectionModeList.push_back("Cylindrical");
+
+    this->projectionModeIDx = 0;
 
     std::string default_texture = this->texture.GetTexturePath();
     for (const auto& entry : std::filesystem::directory_iterator("textures/")) {
@@ -81,6 +119,20 @@ void GUI::RenderWindow()
                     glPolygonMode(GL_FRONT_AND_BACK, it->second);
                     if (this->renderMode != "Fill")
                         texture.SetTexture(textureList[textureList.size() - 1]);
+                    else
+                        texture.SetTexture(textureList[textureIDx]);
+                }
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+        if (ImGui::BeginCombo("Projection Mode", this->projectionModeList[this->projectionModeIDx].c_str())) {
+            for (int i = 0; i < static_cast<int>(projectionModeList.size()); i++) {
+                const bool is_selected = (this->projectionModeIDx == i);
+                if (ImGui::Selectable((this->projectionModeList[i]).c_str(), is_selected)) {
+                    this->projectionModeIDx = i;
+                    changeProjectionType();
                 }
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();
