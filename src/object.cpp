@@ -80,6 +80,7 @@ vec2 CylindricalProject(const vec3& pos, const vec3& center, const vec3& boundsM
 }
 
 Object::Object(std::string filepath) {
+    
     std::ifstream ObjFile(filepath);
     if (ObjFile.is_open()) {
         std::string line;
@@ -121,8 +122,6 @@ Object::Object(std::string filepath) {
         };
         ObjFile.close();
 
-        std::cout << "Data Count Temp: " << tempPositions.size() << " " << tempNormals.size() << " " << tempUVs.size() << std::endl;
-
         this->boundsMin = {std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),std::numeric_limits<float>::max()};
         this->boundsMax = {std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest()};
         calculateCenter(tempPositions);
@@ -153,8 +152,6 @@ Object::Object(std::string filepath) {
                 };
             };
         };
-
-        std::cout << "Data Count Final: " << this->positions.size() << " " << this->normals.size() << " " << this->UVs.size() << " " << this->planarUVsX.size() << " " << this->planarUVsY.size() << " " << this->planarUVsZ.size() << std::endl;
     } else {
         std::cerr << "Unable to open file: " << filepath << std::endl;
     };

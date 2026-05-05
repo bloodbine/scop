@@ -40,8 +40,8 @@ class Object {
         std::vector<vec2> cylindricalUVs;
         vec3 boundsMin;
         vec3 boundsMax;
-        std::vector<unsigned int> indices;
         vec3 Center;
+        std::vector<unsigned int> indices;
         std::string material;
         std::string name;
 

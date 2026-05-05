@@ -15,6 +15,7 @@ class GUI {
     private:
         float lightRGB[3];
         float lightAmbientStrength[3];
+        float modelPos[3];
         Texture &texture;
         std::vector<std::string> textureList;
         int textureIDx;
@@ -37,4 +38,5 @@ class GUI {
 
         float *getLightRGB(void);
         float *getLightAmbientStrength(void);
+        float *getModelPos(void);
 };

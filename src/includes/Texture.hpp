@@ -3,7 +3,7 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#include <vector>
 
 class Texture {
     private:
@@ -15,6 +15,7 @@ class Texture {
         int m_BPP;
 
         void SetWhiteTexture();
+        void SetDefaultTexture(int size = 512);
 
     public:
         Texture(const std::string& path);

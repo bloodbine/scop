@@ -21,16 +21,21 @@ int main(int argc, char **argv) {
         return 1;
     };
 
+    Object obj(argv[1]);
+    if (obj.getPositions().size() == 0)
+        return 1;
+
     GLFWwindow* window;
     
     if (glfwInit() != GLFW_TRUE) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
-        return -1;
+        return 1;
     };
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     window = glfwCreateWindow(1920, 1080, "Scop", NULL, NULL);
     glfwMakeContextCurrent(window);
@@ -38,12 +43,11 @@ int main(int argc, char **argv) {
 
     if (glewInit() != GLEW_OK) {
         std::cerr << "Failed to initialize GLEW" << std::endl;
-        return -1;
+        return 1;
     };
 
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
-    Object obj(argv[1]);
     static_assert(sizeof(vec3) == 3 * sizeof(float));
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -77,7 +81,7 @@ int main(int argc, char **argv) {
     shader.Bind();
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    Texture texture("bl_tx225_co.png"); // default texture
+    Texture texture("Default"); // default texture
     texture.Bind();
     shader.SetUniform1i("u_Texture", 0);
 
@@ -106,6 +110,7 @@ int main(int argc, char **argv) {
     GUI gui(window, texture, modelMatrix, vb, obj);
     float *lightRGB = gui.getLightRGB();
     float *lightAmbientStrength = gui.getLightAmbientStrength();
+    float *modelPos = gui.getModelPos();
 
     Renderer renderer;
     while (!glfwWindowShouldClose(window)) {
@@ -149,6 +154,7 @@ int main(int argc, char **argv) {
         shader.SetUniform3f("u_LightDirection", 0.0f, -1.0f, 0.0f);
         shader.SetUniform3f("u_LightColour", lightRGB[0], lightRGB[1], lightRGB[2]);
         shader.SetUniform3f("u_AmbientStrength", lightAmbientStrength[0], lightAmbientStrength[1], lightAmbientStrength[2]);
+        shader.SetUniform3f("modelPos", modelPos[0], modelPos[1], modelPos[2]);
 
         renderer.Draw(va, ib, shader);
         gui.RenderWindow();

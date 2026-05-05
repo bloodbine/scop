@@ -9,13 +9,15 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform mat3 normalMatrix;
 
+uniform vec3 modelPos;
+
 out vec2 v_TexCoords;
 out vec3 v_Normal;
 out vec3 v_FragPos;
 
 void main()
 {
-   vec4 worldPos = model * vec4(position, 1.0);
+   vec4 worldPos = vec4(modelPos, 0.0) + (model * vec4(position, 1.0));
    gl_Position = projection * view * worldPos;
 
    v_TexCoords = uv;

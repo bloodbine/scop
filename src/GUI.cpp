@@ -44,6 +44,10 @@ GUI::GUI(GLFWwindow *window, Texture &texture, float (&modelMatrix)[16], VertexB
     this->lightAmbientStrength[1] = 0.2f;
     this->lightAmbientStrength[2] = 0.2f;
 
+    this->modelPos[0] = 0.0f;
+    this->modelPos[1] = 0.0f;
+    this->modelPos[2] = 0.0f;
+
     this->scale[0] = 1.0f;
     this->scale[1] = 1.0f;
     this->scale[2] = 1.0f;
@@ -62,16 +66,16 @@ GUI::GUI(GLFWwindow *window, Texture &texture, float (&modelMatrix)[16], VertexB
 
     this->projectionModeIDx = 0;
 
-    std::string default_texture = this->texture.GetTexturePath();
     for (const auto& entry : std::filesystem::directory_iterator("textures/")) {
         std::filesystem::path filepath = entry;
         if (std::filesystem::is_regular_file(entry) && filepath.extension() == ".png") {
-            if (filepath == default_texture)
-                this->textureIDx = this->textureList.size();
             this->textureList.push_back(std::string(filepath.filename()));
         }
     };
+    this->textureList.push_back("Default");
     this->textureList.push_back("None");
+
+    this->textureIDx = this->textureList.size() - 2;
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
@@ -117,10 +121,10 @@ void GUI::RenderWindow()
                 if (ImGui::Selectable(it->first.c_str(), is_selected)) {
                     this->renderMode = it->first;
                     glPolygonMode(GL_FRONT_AND_BACK, it->second);
-                    if (this->renderMode != "Fill")
-                        texture.SetTexture(textureList[textureList.size() - 1]);
-                    else
+                    if (this->renderMode == "Fill")
                         texture.SetTexture(textureList[textureIDx]);
+                    else
+                        texture.SetTexture(textureList[textureList.size() - 1]);
                 }
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();
@@ -146,6 +150,7 @@ void GUI::RenderWindow()
         this->modelMatrix[0]  = this->scale[0];
         this->modelMatrix[5]  = this->scale[1];
         this->modelMatrix[10] = this->scale[2];
+        ImGui::SliderFloat3("Position", this->modelPos, -5.0f, 5.0f, "%.2f");
         ImGui::EndMenu();
     }
     ImGui::End();
@@ -160,4 +165,8 @@ float* GUI::getLightRGB(void)
 
 float* GUI::getLightAmbientStrength(void) {
     return this->lightAmbientStrength;
+};
+
+float* GUI::getModelPos(void) {
+    return this->modelPos;
 };
